@@ -1,204 +1,127 @@
-import Head from 'next/head'
+import {
+  Grid,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemSecondaryAction,
+  Menu,
+  MenuItem,
+  Typography,
+  Fab,
+} from "@material-ui/core";
+import { green, red } from "@material-ui/core/colors";
+import { ArrowDownward, ArrowUpward, MoreVert, Add } from "@material-ui/icons";
+import { DatePicker, TimePicker } from "@material-ui/pickers";
+import React, { useContext, useState } from "react";
+import { format } from "date-fns";
+import { StoreContext } from "../utils/contexts";
+import useSelector from "../utils/useSelector";
 
-export default function Home() {
+export const getStaticProps = ({ params }) => ({
+  props: {
+    dailyPunch: [1586952000000, 1586964300000, 1586968200000, 1586987100000],
+  },
+});
+
+const getTime = ({ punchClock }, time) =>
+  (punchClock.times || {})[format(time, "yyyy-MM-dd")] || [];
+
+export default function Index({ dailyPunch }) {
+  const { action } = useContext(StoreContext);
+  const [anchor, setAnchor] = useState();
+  const [picker, setPicker] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const times = useSelector(getTime, date);
+  console.log(times);
+
+  const handleClick = (e, i) => setAnchor([e.currentTarget, i]);
+  const handleClose = () => setAnchor();
+  const handleDelete = () => {
+    const [, i] = anchor;
+    times.splice(i, 1);
+    action("setTimes", { date, times });
+    handleClose();
+  };
+  const handleDateChange = (date, i) => {
+    const newTimes = [...times];
+    newTimes[i] = date.getTime();
+    newTimes.sort();
+    action("setTimes", { date, times: newTimes });
+  };
+  const handleAdd = () => {
+    const newTimes = [...times, new Date().getTime()].sort();
+    action("setTimes", { date: date, times: newTimes });
+  };
+  const presentPicker = () => {
+    setPicker(true);
+  };
+
   return (
-    <div className="container">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main>
-        <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
-
-        <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/zeit/next.js/tree/master/examples"
-            className="card"
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://zeit.co/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="card"
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with ZEIT Now.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer>
-        <a
-          href="https://zeit.co?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by <img src="/zeit.svg" alt="ZEIT Logo" />
-        </a>
-      </footer>
-
-      <style jsx>{`
-        .container {
-          min-height: 100vh;
-          padding: 0 0.5rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer img {
-          margin-left: 0.5rem;
-        }
-
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
-
-        .title a {
-          color: #0070f3;
-          text-decoration: none;
-        }
-
-        .title a:hover,
-        .title a:focus,
-        .title a:active {
-          text-decoration: underline;
-        }
-
-        .title {
-          margin: 0;
-          line-height: 1.15;
-          font-size: 4rem;
-        }
-
-        .title,
-        .description {
-          text-align: center;
-        }
-
-        .description {
-          line-height: 1.5;
-          font-size: 1.5rem;
-        }
-
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
-
-        .grid {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-wrap: wrap;
-
-          max-width: 800px;
-          margin-top: 3rem;
-        }
-
-        .card {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
-        }
-
-        .card:hover,
-        .card:focus,
-        .card:active {
-          color: #0070f3;
-          border-color: #0070f3;
-        }
-
-        .card h3 {
-          margin: 0 0 1rem 0;
-          font-size: 1.5rem;
-        }
-
-        .card p {
-          margin: 0;
-          font-size: 1.25rem;
-          line-height: 1.5;
-        }
-
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
-            flex-direction: column;
-          }
-        }
-      `}</style>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
-    </div>
-  )
+    <Grid item xs={12} md={6}>
+      <Typography variant="h2">
+        Dia <span onClick={presentPicker}>{format(date, "dd")}</span>
+      </Typography>
+      <DatePicker
+        className="hidden"
+        autoOk
+        open={picker}
+        onClose={() => setPicker(false)}
+        openTo="date"
+        variant="dialog"
+        value={date}
+        onChange={(d) => {
+          setDate(d);
+          setPicker(false);
+        }}
+      />
+      <List>
+        {times.map((time, i) => (
+          <ListItem key={`time-${time}`}>
+            <ListItemIcon>
+              {i % 2 ? (
+                <ArrowUpward style={{ color: red[500] }} />
+              ) : (
+                <ArrowDownward style={{ color: green[500] }} />
+              )}
+            </ListItemIcon>
+            <TimePicker
+              value={new Date(time)}
+              autoOk
+              onChange={(date) => handleDateChange(date, i)}
+            />
+            <ListItemSecondaryAction>
+              <IconButton
+                edge="end"
+                aria-label="more"
+                onClick={(e) => handleClick(e, i)}
+              >
+                <MoreVert />
+              </IconButton>
+            </ListItemSecondaryAction>
+          </ListItem>
+        ))}
+      </List>
+      <Menu
+        id="simple-menu"
+        anchorEl={anchor && anchor[0]}
+        open={!!anchor}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={handleDelete}>Delete</MenuItem>
+      </Menu>
+      <Fab
+        color="primary"
+        aria-label="add"
+        onClick={handleAdd}
+        style={{
+          position: "fixed",
+          right: 15,
+          bottom: 15,
+        }}
+      >
+        <Add />
+      </Fab>
+    </Grid>
+  );
 }

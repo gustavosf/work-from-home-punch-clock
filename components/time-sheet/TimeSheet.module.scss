@@ -1,0 +1,13 @@
+.timeSheet {
+  :global {
+    .MuiInput-underline {
+      &::after,
+      &::before {
+        display: none;
+      }
+      input {
+        cursor: pointer;
+      }
+    }
+  }
+}

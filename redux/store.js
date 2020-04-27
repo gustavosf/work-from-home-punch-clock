@@ -1,6 +1,6 @@
 import { combineReducers, createStore } from "redux";
-import { SET_TIMES } from "./actions";
-import { setTimes } from "./reducers";
+import * as actions from "./actions";
+import * as reducers from "./reducers";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 
@@ -15,7 +15,8 @@ const createReducer = (reducers = {}, initialState = {}) => {
 const rootReducer = combineReducers({
   punchClock: createReducer(
     {
-      [SET_TIMES]: setTimes,
+      [actions.SET_TIMES]: reducers.setTimes,
+      [actions.ADD_TIME]: reducers.addTime,
     },
     { times: {} }
   ),

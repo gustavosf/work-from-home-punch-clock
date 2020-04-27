@@ -7,10 +7,10 @@ import Head from "next/head";
 import { useEffect } from "react";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import * as ACTIONS from "../redux/actions";
-import { persistor, store } from "../redux/store";
-import { StoreContext } from "../utils/contexts";
-import theme from "../utils/theme";
+import * as ACTIONS from "~/redux/actions";
+import { persistor, store } from "~/redux/store";
+import { StoreContext } from "~/utils/contexts";
+import theme from "~/utils/theme";
 
 export const getInitialProps = async ({ Component, ctx }) => {
   const pageProps = Component.getInitialProps

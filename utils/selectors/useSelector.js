@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
-import { StoreContext } from "../utils/contexts";
-import shallowEqual from "./shallow-equal";
+import { StoreContext } from "~/utils/contexts";
+import shallowEqual from "~/utils/shallow-equal";
 
 export default (selector, props) => {
   const { store } = useContext(StoreContext);

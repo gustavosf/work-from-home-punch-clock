@@ -1,68 +1,26 @@
-import {
-  Grid,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  Menu,
-  MenuItem,
-  Typography,
-  Fab,
-} from "@material-ui/core";
-import { green, red } from "@material-ui/core/colors";
-import { ArrowDownward, ArrowUpward, MoreVert, Add } from "@material-ui/icons";
-import { DatePicker, TimePicker } from "@material-ui/pickers";
-import React, { useContext, useState } from "react";
+import { Fab, Grid, Typography } from "@material-ui/core";
+import { Add } from "@material-ui/icons";
+import { DatePicker } from "@material-ui/pickers";
 import { format } from "date-fns";
-import { StoreContext } from "../utils/contexts";
-import useSelector from "../utils/useSelector";
+import React, { useCallback, useContext, useState } from "react";
+import { TimeSheet } from "~/components";
+import { StoreContext } from "~/utils/contexts";
 
-export const getStaticProps = ({ params }) => ({
-  props: {
-    dailyPunch: [1586952000000, 1586964300000, 1586968200000, 1586987100000],
-  },
-});
-
-const getTime = ({ punchClock }, time) =>
-  (punchClock.times || {})[format(time, "yyyy-MM-dd")] || [];
-
-export default function Index({ dailyPunch }) {
+export default function Index() {
   const { action } = useContext(StoreContext);
-  const [anchor, setAnchor] = useState();
   const [picker, setPicker] = useState(false);
   const [date, setDate] = useState(new Date());
-  const times = useSelector(getTime, date);
-  console.log(times);
-
-  const handleClick = (e, i) => setAnchor([e.currentTarget, i]);
-  const handleClose = () => setAnchor();
-  const handleDelete = () => {
-    const [, i] = anchor;
-    times.splice(i, 1);
-    action("setTimes", { date, times });
-    handleClose();
-  };
-  const handleDateChange = (date, i) => {
-    const newTimes = [...times];
-    newTimes[i] = date.getTime();
-    newTimes.sort();
-    action("setTimes", { date, times: newTimes });
-  };
-  const handleAdd = () => {
-    const newTimes = [...times, new Date().getTime()].sort();
-    action("setTimes", { date: date, times: newTimes });
-  };
-  const presentPicker = () => {
-    setPicker(true);
-  };
+  const addTime = useCallback(() => {
+    action("addTime", { date: date, time: new Date().getTime() });
+  }, [date]);
 
   return (
     <Grid item xs={12} md={6}>
       <Typography variant="h2">
-        Dia <span onClick={presentPicker}>{format(date, "dd")}</span>
+        Dia <span onClick={() => setPicker(true)}>{format(date, "dd")}</span>
       </Typography>
       <DatePicker
+        style={{ display: "none" }}
         className="hidden"
         autoOk
         open={picker}
@@ -75,45 +33,11 @@ export default function Index({ dailyPunch }) {
           setPicker(false);
         }}
       />
-      <List>
-        {times.map((time, i) => (
-          <ListItem key={`time-${time}`}>
-            <ListItemIcon>
-              {i % 2 ? (
-                <ArrowUpward style={{ color: red[500] }} />
-              ) : (
-                <ArrowDownward style={{ color: green[500] }} />
-              )}
-            </ListItemIcon>
-            <TimePicker
-              value={new Date(time)}
-              autoOk
-              onChange={(date) => handleDateChange(date, i)}
-            />
-            <ListItemSecondaryAction>
-              <IconButton
-                edge="end"
-                aria-label="more"
-                onClick={(e) => handleClick(e, i)}
-              >
-                <MoreVert />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
-        ))}
-      </List>
-      <Menu
-        id="simple-menu"
-        anchorEl={anchor && anchor[0]}
-        open={!!anchor}
-        onClose={handleClose}
-      >
-        <MenuItem onClick={handleDelete}>Delete</MenuItem>
-      </Menu>
+      <TimeSheet date={date} />
       <Fab
         color="primary"
         aria-label="add"
-        onClick={handleAdd}
+        onClick={addTime}
         style={{
           position: "fixed",
           right: 15,

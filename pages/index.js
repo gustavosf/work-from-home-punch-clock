@@ -1,18 +1,12 @@
-import { Fab, Grid, Typography } from "@material-ui/core";
-import { Add } from "@material-ui/icons";
+import { Grid, Typography } from "@material-ui/core";
 import { DatePicker } from "@material-ui/pickers";
 import { format } from "date-fns";
-import React, { useCallback, useContext, useState } from "react";
-import { TimeSheet } from "~/components";
-import { StoreContext } from "~/utils/contexts";
+import React, { useState } from "react";
+import { TimeSheet, TimeSheetTotals, TimeSheetControls } from "~/components";
 
 export default function Index() {
-  const { action } = useContext(StoreContext);
   const [picker, setPicker] = useState(false);
   const [date, setDate] = useState(new Date());
-  const addTime = useCallback(() => {
-    action("addTime", { date: date, time: new Date().getTime() });
-  }, [date]);
 
   return (
     <Grid item xs={12} md={6}>
@@ -34,18 +28,8 @@ export default function Index() {
         }}
       />
       <TimeSheet date={date} />
-      <Fab
-        color="primary"
-        aria-label="add"
-        onClick={addTime}
-        style={{
-          position: "fixed",
-          right: 15,
-          bottom: 15,
-        }}
-      >
-        <Add />
-      </Fab>
+      <TimeSheetTotals date={date} />
+      <TimeSheetControls date={date} />
     </Grid>
   );
 }

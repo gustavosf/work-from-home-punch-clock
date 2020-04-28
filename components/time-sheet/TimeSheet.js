@@ -25,6 +25,8 @@ const TimeSheet = ({ date }) => {
   const handleClose = () => setAnchor();
 
   const handleDateChange = (date, i) => {
+    console.log(date);
+    date.setSeconds(0, 0); // zero seconds
     const newTimes = update(times, {
       $splice: [[i, 1]], // remove old
       $push: [date.getTime()], // add new

@@ -7,18 +7,17 @@ import { format } from "date-fns";
 
 const DIVIDER = "<br>";
 
-const buildBody = (times) =>
+const buildBody = (date, times) =>
   encodeURI(
-    `Olá, seguem os horários do expediente do dia (${format(
-      new Date(),
-      "dd/MM"
-    )}):${DIVIDER + DIVIDER}${times
+    `Olá, seguem os horários do expediente do dia (${format(date, "dd/MM")}):${
+      DIVIDER + DIVIDER
+    }${times
       .map((t, i) => (i % 2 ? "Saída: " : "Entrada: ") + format(t, "HH:mm"))
       .join(DIVIDER)}${DIVIDER + DIVIDER}Atenciosamente`
   );
 
-const buidSubject = () =>
-  encodeURI(`Horários - Teletrabalho - ${format(new Date(), "dd/MM")}`);
+const buidSubject = (date) =>
+  encodeURI(`Horários - Teletrabalho - ${format(date, "dd/MM")}`);
 
 const TimeSheetControls = ({ date }) => {
   const { action } = useContext(StoreContext);
@@ -33,9 +32,9 @@ const TimeSheetControls = ({ date }) => {
   }, [date]);
 
   const sendEmail = useCallback(() => {
-    const mailTo = `mailto:rh-br@objectedge.com?subject=${buidSubject()}&body=${buildBody(
-      times
-    )}`;
+    const mailTo = `mailto:rh-br@objectedge.com?subject=${buidSubject(
+      date
+    )}&body=${buildBody(date, times)}`;
     window.open(mailTo);
   }, [times]);
 

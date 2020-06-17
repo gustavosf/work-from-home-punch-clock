@@ -31,7 +31,7 @@ const TimeSheetTotals = ({ date }) => {
 
   const duration = list.reduce(
     (prev, time, i) => prev + (i % 2 ? 1 : -1) * time,
-    60000
+    0
   );
 
   return (

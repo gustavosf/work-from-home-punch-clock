@@ -61,6 +61,7 @@ const TimeSheet = ({ date }) => {
                 value={new Date(time)}
                 autoOk
                 onChange={(date) => handleDateChange(date, i)}
+                ampm={false}
               />
               <ListItemSecondaryAction>
                 <IconButton
